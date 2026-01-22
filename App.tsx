@@ -1,9 +1,9 @@
 import { StyleSheet } from "react-native";
-import ContactUsScreen from "./src/screens/ContactUsScreen";
+import Navigation from "./src/navigation/MainStackNavigation";
 
 export default function App() {
   return (
-    <ContactUsScreen/>
+    <Navigation/>
   );
 }
 

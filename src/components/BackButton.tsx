@@ -1,14 +1,22 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React from 'react'
 import Entypo from '@expo/vector-icons/Entypo'
 import {s, vs} from 'react-native-size-matters'
+import { useNavigation } from '@react-navigation/native'
+
 
 const BackButton = () => {
+  const nav = useNavigation();
+  
   return (
-    <View style={styles.container}>
-      <Entypo name="chevron-thin-left" size={18} color="black" />
-    </View>
-  )
+    <TouchableOpacity onPress={() => {
+      nav.goBack();
+    }}>
+      <View style={styles.container}>
+        <Entypo name="chevron-thin-left" size={18} color="black" />
+      </View>
+    </TouchableOpacity>
+  );
 }
 
 export default BackButton
