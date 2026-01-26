@@ -1,10 +1,8 @@
 import { StyleSheet } from "react-native";
-import Navigation from "./src/navigation/MainStackNavigation";
+import AuthStackNavigation from "./src/navigation/Auth/AuthStackNavigation";
 
 export default function App() {
-  return (
-    <Navigation/>
-  );
+  return <AuthStackNavigation />;
 }
 
 const styles = StyleSheet.create({

@@ -1,25 +1,42 @@
 import { createStaticNavigation } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "../screens/LoginScreen";
 import ContactUsScreen from "../screens/ContactUsScreen";
-import RootStackParamList from "./RootStackParamList";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import HomeStackNavigation from "./HomeStackNavigation";
+import HomeStackParamList from "./HomeStackParamList";
+import { FontAwesome6, Entypo } from "@expo/vector-icons";
 
-const RootStack = createNativeStackNavigator<RootStackParamList>({
-    screenOptions: {
-        headerShown: false
-    },
+const BottomNavigation = createBottomTabNavigator({
+  screenOptions: {
+    headerShown: false,
+    tabBarActiveTintColor: "blue",
+    // tabBarInactiveTintColor
+  },
   screens: {
-    Login: LoginScreen,
-    ContactUs: ContactUsScreen
+    HomeStack: {
+      screen: HomeStackNavigation,
+      options: {
+        title: "Home",
+        tabBarIcon: ({ color, size }) => {
+          return <Entypo name="home" size={size} color={color} />;
+        },
+      },
+    },
+    ContactUs: {
+      screen: ContactUsScreen,
+      options: {
+        tabBarIcon: ({ color, size }) => {
+          return <FontAwesome6 name="contact-card" size={size} color={color} />;
+        },
+      },
+    },
   },
 });
 
-const Navigation = createStaticNavigation(RootStack);
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends HomeStackParamList {}
   }
 }
 
-export default Navigation;
+export default BottomNavigation;

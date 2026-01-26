@@ -16,14 +16,14 @@ import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import RootStackParamList from "../navigation/RootStackParamList";
+import AuthStackParamList from "../../navigation/Auth/AuthStackParamList";
 
 const LoginScreen = () => {
   const imgPressed = () => {
     console.log("Image Pressesd");
   };
 
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -85,15 +85,15 @@ const LoginScreen = () => {
           // } else {
           //   Alert.alert("Wrong username or password.");
           // }
-          // navigation.navigate("Login");
-          navigation.push('ContactUs');
+          navigation.replace('MainStack');
         }}
       />
       <Text>
         Don't have account?{" "}
         <Text
           onPress={() => {
-            Alert.alert("register");
+            // Alert.alert("register");
+            navigation.navigate('Register');
           }}
           style={styles.registerTextStyle}
         >
