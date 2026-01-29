@@ -11,12 +11,12 @@ import { s, vs } from "react-native-size-matters";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import HomeStackParamList from "../navigation/HomeStackParamList";
-import { Product } from "../screens/HomeScreen";
+import { ProductRes } from "../network/service/productService";
 
 const screenWidth = Dimensions.get("window").width;
 const itemSize = (screenWidth - 16 * 3) / 2;
 
-const ProductItem = ({item}: {item: Product}) => {
+const ProductItem = ({ item }: { item: ProductRes }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   return (

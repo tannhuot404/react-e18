@@ -1,0 +1,1 @@
+// create generic type for response
