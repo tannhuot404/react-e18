@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import HomeStackParamList from "../navigation/HomeStackParamList";
 import { ProductRes } from "../network/service/productService";
+import { Image } from "expo-image";
 
 const screenWidth = Dimensions.get("window").width;
 const itemSize = (screenWidth - 16 * 3) / 2;
@@ -20,14 +21,17 @@ const ProductItem = ({ item }: { item: ProductRes }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("Detail", { id: 1 })}>
-      <ImageBackground
-        style={styles.imgBackground}
-        imageStyle={styles.img}
-        source={{
-          uri: item.image,
-        }}
-      >
+    <TouchableOpacity
+      onPress={() => navigation.navigate("Detail", { id: item.id })}
+    >
+      <View style={styles.container}>
+        <Image
+          style={styles.img}
+          source={item.image}
+          contentFit="cover"
+          placeholder={require("../../assets/placeHolderImage.png")}
+          placeholderContentFit="cover"
+        />
         <View style={styles.overlayView}></View>
         <Text style={styles.title}>{item.name}</Text>
         {item.discount > 0 && (
@@ -35,7 +39,7 @@ const ProductItem = ({ item }: { item: ProductRes }) => {
             <Text style={{ color: "white" }}>{item.discount}% off</Text>
           </View>
         )}
-      </ImageBackground>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -43,11 +47,12 @@ const ProductItem = ({ item }: { item: ProductRes }) => {
 export default ProductItem;
 
 const styles = StyleSheet.create({
-  imgBackground: {
+  container: {
     width: itemSize,
     height: 200,
   },
   img: {
+    ...StyleSheet.absoluteFillObject,
     borderRadius: s(20),
   },
   title: {
