@@ -1,3 +1,4 @@
+import { MAX_ITEM_PER_REQ } from "../../Utils/Constants";
 import { apiClient } from "../api/client";
 
 export interface ProductRes {
@@ -15,8 +16,10 @@ export interface ProductReq {
 }
 
 const ProductService = {
-  getAll: async (): Promise<ProductRes[]> => {
-    const res = await apiClient.get("/items");
+  get: async (page: number): Promise<ProductRes[]> => {
+    const res = await apiClient.get(
+      `/items?page=${page}&&limit=${MAX_ITEM_PER_REQ}`,
+    );
     return res.data;
   },
   add: async (product: ProductReq): Promise<ProductRes> => {

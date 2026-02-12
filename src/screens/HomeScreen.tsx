@@ -5,8 +5,14 @@ import {
   FlatList,
   Text,
   ActivityIndicator,
+  ListRenderItem,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { useNavigation } from "@react-navigation/native";
 import ProductItem from "../components/ProductItem";
 import { s, vs } from "react-native-size-matters";
@@ -17,30 +23,33 @@ import ProductService, {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import HomeStackParamList from "../navigation/HomeStackParamList";
+import { usePagination } from "../Utils/usePagination";
 
 type HomeProps = NativeStackScreenProps<HomeStackParamList, "Home">;
 const HomeScreen = ({ route }: HomeProps) => {
-  const navigation = useNavigation();
+  const {
+    data,
+    isLoadMore,
+    isRefresh,
+    isLoading,
+    handleLoadMore,
+    handlePullRefresh,
+    setData,
+  } = usePagination(ProductService.get);
 
-  const [productList, setProductList] = useState<ProductRes[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      const data = await ProductService.getAll();
-      setProductList(data);
-    } catch (error) {
-      console.error("Failed to fetch all product: ", error);
-    } finally {
-      setIsLoading(false);
-    }
+  const renderFooter = () => {
+    if (!isLoadMore) return null;
+    return (
+      <View style={{ paddingVertical: 20, alignItems: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
   };
 
+  const navigation = useNavigation();
+
   const addProduct = async () => {
-    const newId = (
-      Number(productList.at(productList.length - 1)?.id) + 1
-    ).toString();
+    const newId = (Number(data.at(data.length - 1)?.id) + 1).toString();
     const product: ProductReq = {
       id: newId,
       name: `New Product ${newId}`,
@@ -50,25 +59,21 @@ const HomeScreen = ({ route }: HomeProps) => {
 
     try {
       const data = await ProductService.add(product);
-      setProductList((oldValue) => [...oldValue, data]);
+      setData((oldValue) => [...oldValue, data]);
     } catch (error) {
       console.error("Failed to fetch all product: ", error);
     }
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
     if (route.params?.deletedId) {
-      setProductList((oldValue) =>
+      setData((oldValue) =>
         oldValue.filter((p) => p.id !== route.params?.deletedId),
       );
     }
 
     if (route.params?.updatedProduct) {
-      setProductList((oldValue) =>
+      setData((oldValue) =>
         oldValue.map((p) =>
           p.id === route.params?.updatedProduct?.id
             ? route.params.updatedProduct
@@ -77,6 +82,11 @@ const HomeScreen = ({ route }: HomeProps) => {
       );
     }
   }, [route.params?.deletedId, route.params?.updatedProduct]);
+
+  const renderItem: ListRenderItem<ProductRes> = useCallback(
+    ({ item }) => <ProductItem item={item} />,
+    [],
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -90,13 +100,20 @@ const HomeScreen = ({ route }: HomeProps) => {
     });
   });
 
-  if (isLoading) return <ActivityIndicator size={"large"} style={{marginTop: s(18)}} />;
+  if (isLoading)
+    return (
+      <View
+        style={{ flex: 1, alignContent: "center", justifyContent: "center" }}
+      >
+        <ActivityIndicator size={"large"} style={{ marginTop: s(18) }} />
+      </View>
+    );
 
   return (
     <View style={{ paddingHorizontal: s(16), paddingVertical: vs(10) }}>
       <FlatList
-        data={productList}
-        renderItem={(items) => <ProductItem item={items.item} />}
+        data={data}
+        renderItem={renderItem}
         keyExtractor={(data) => data.id.toString()}
         numColumns={2}
         columnWrapperStyle={{
@@ -104,6 +121,13 @@ const HomeScreen = ({ route }: HomeProps) => {
           justifyContent: "space-between",
         }}
         ListEmptyComponent={<Text>No Product</Text>}
+        // bottom refresh
+        ListFooterComponent={renderFooter}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5} // 0 - 1
+        // Pull Refresh
+        refreshing={isRefresh}
+        onRefresh={handlePullRefresh}
       />
     </View>
   );

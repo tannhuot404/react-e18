@@ -6,7 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { memo } from "react";
 import { s, vs } from "react-native-size-matters";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -20,6 +20,7 @@ const itemSize = (screenWidth - 16 * 3) / 2;
 const ProductItem = ({ item }: { item: ProductRes }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  console.log("Render item: ", item.id);
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("Detail", { id: item.id })}
@@ -44,7 +45,7 @@ const ProductItem = ({ item }: { item: ProductRes }) => {
   );
 };
 
-export default ProductItem;
+export default memo(ProductItem);
 
 const styles = StyleSheet.create({
   container: {
